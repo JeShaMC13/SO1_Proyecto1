@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<head>
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js'></script>
+    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+    <script src="js/jquery.flot.js"  type="text/javascript"></script>
+    <script src="js/jquery-1.12.0.min.js"  type="text/javascript"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"> </script>  
+    <script src="css/sb-admin-2.css"></script>
+</head>
+
+<html>
+    <body>
+        <div id='result1'><h3></h3></div><br><br>
+        <div id="resultram" style="height: 300px; width: 100%;"></div>
+        <div id="resultcpu" style="height: 300px; width: 100%;"></div>
+
+        <!-- Servidor 2, quitar comentario cuando se necesite
+        <div id='result10'><h3></h3></div><br><br>
+        <div id="resultram2" style="height: 300px; width: 100%;"></div>
+        <div id="resultcpu2" style="height: 300px; width: 100%;"></div>
+        -->
+        
+
+    <script>
+        window.onload = function () {
+        
+        //variables para graficar
+        //servidor 1
+        var serv1 = "";
+        var ramTotal1 = 0;
+        var ramLibre1 = 0;
+        var ramUsada1 = 0;
+        var cpu1_1 = 0;
+        var cpu2_1 = 0;
+        var cpu3_1 = 0;
+        var cpu4_1 = 0;
+        var cpu5_1 = 0;
+        
+        //servidor 2
+        var serv2 = "";
+        var ramTotal2 = 0;
+        var ramLibre2 = 0;
+        var ramUsada2 = 0;
+        var cpu1_2 = 0;
+        var cpu2_2 = 0;
+        var cpu3_2 = 0;
+        var cpu4_2 = 0;
+        var cpu5_2 = 0;
+
+        cron();
+        function cron(){
+            //Metodo ajax para actualizar las graficas
+            $.ajax({
+                url: 'receive',
+                type: 'post',
+                dataType: 'html',
+                data : { ajax_post_data: 'hello'},
+                success : function(data) {
+                    //obtengo los valores de cada servidor
+                    serv1 = data.split("?")[0];
+                    serv2 = data.split("?")[1];
+                   
+                    //servidor 1
+                    //ram total
+                    $('#result1').html("Total RAM Servidor 1 (MB): " + serv1.split("%")[0]);
+                    ramLibre1 = parseFloat(serv1.split("%")[1]);
+                    ramUsada1 = parseFloat(serv1.split("%")[2]);
+
+                    //charts
+                    var chart = new CanvasJS.Chart("resultram",{
+                        title:{
+                            text: "Ram Utilizable"
+                        },
+                        legend: {
+                            maxWidth: 350,
+                            itemWidth: 120
+                        },
+                        data: 
+                        [{
+                            type: "pie",
+                            showInLegend: true,
+                            legendText: "{indexLabel}",
+                            dataPoints: [
+                                { y: ramLibre1, indexLabel: "Libre" },
+                                { y: ramUsada1, indexLabel: "Ocupada" },
+                            ]
+                        }]
+                    });
+                    
+                    chart.render();
+                    //cpu
+
+                    cpu1_1 = cpu2_1;
+                    cpu2_1 = cpu3_1;
+                    cpu3_1 = cpu4_1;
+                    cpu4_1 = cpu5_1;
+                    cpu5_1 = parseFloat(serv1.split("%")[3]);
+                    var chart2 = new CanvasJS.Chart("resultcpu",
+                    {
+                        title:{
+                        text: "Uso de cpu"
+                        },
+                        data: [
+                        {
+                            type: "line",
+
+                            dataPoints: [
+                            { y: cpu1_1 },
+                            { y: cpu2_1 },
+                            { y: cpu3_1 },
+                            { y: cpu4_1 },
+                            { y: cpu5_1 }
+                            ]
+                        }
+                        ]
+                    });
+                    chart2.render();
+
+                }
+            });
+        } 
+        setInterval(function(){cron();}, 1500); // Lanzará la petición cada 10 segundos
+    }
+  </script>
+</body>
+</html>
