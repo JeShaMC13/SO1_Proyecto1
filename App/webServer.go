@@ -41,7 +41,15 @@ type Process struct {
 	p_nombre  string
 }
 
-
+func prueba(){
+	cmd := exec.Command("ps", "aux")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		
+		log.Fatal(err)
+	}
 
 func cpuInfo(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.Command("ps", "aux")
@@ -80,6 +88,7 @@ func cpuInfo(w http.ResponseWriter, r *http.Request) {
 		processes = append(processes, &Process{pid, usuario, estado, mem, nombre})
 	}
 	var cadena string
+	var cadena3 string
 	cadena += "<table >\n"
 	cadena += "<tr>\n"
 	cadena += "<th>PID</th>\n"
@@ -102,11 +111,11 @@ func cpuInfo(w http.ResponseWriter, r *http.Request) {
 		cadena += cadena2
 		cadena2 = fmt.Sprintf("%s%.2f%s","<td>",p.p_mem,"</td>")
 		cadena += cadena2
-		cadena2 = fmt.Sprintf("%s%s%s","<td>","preba","</td>")
+		cadena2 = "<td><input onclick="+"\"call('2');\""+" type="+"\"button\""+" value="+"Detener"+" id="+"\"myButton1\""+"/></td>"
 		cadena += cadena2
 		cadena += "</tr>\n"
 	}
-	cadena += "<\table>\n"
+	cadena += "</table>\n"
 	fmt.Fprintf(w, cadena)
 }
 
